@@ -112,3 +112,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Data folders
+.idea/
+celeba_data/
+mnist_data/
+mnist.pkl.gz
+data/
