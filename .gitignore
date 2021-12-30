@@ -119,3 +119,5 @@ celeba_data/
 mnist_data/
 mnist.pkl.gz
 data/
+*.wav
+Samples sources.txt
