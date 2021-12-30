@@ -113,7 +113,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-data/
-celeba_data/
-*.wav
+# Data folders
 .idea/
+celeba_data/
+mnist_data/
+mnist.pkl.gz
+data/
+*.wav
+Samples sources.txt
