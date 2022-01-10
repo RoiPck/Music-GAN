@@ -87,16 +87,17 @@ if __name__ == "__main__":
         "sample_rate" : SAMPLE_RATE,
         "n_fft" : 1024,
         "hop_length" : 512,
-        "win_length" : 1024,
-        "n_mels" : 64
+        "win_length" : None,
+        "n_mels" : 64,
+        "norm": "slaney",
+        "mel_scale": "htk"
     }
 
-    #It seems to be the better parameters, for kicks at least
-    spectro_params = {
-        "n_fft": 4096,
-        "hop_length": 256,
-        "win_length": 4096,
-        "n_iter": 512
+    spectro_params= {
+        "n_fft": 1024,
+        "hop_length": 512,
+        "win_length": None,
+        "return_complex": False
     }
 
     mel_spectrogram = torchaudio.transforms.MelSpectrogram(
@@ -107,10 +108,9 @@ if __name__ == "__main__":
         n_mels=mel_params["n_mels"],
         center=True,
         pad_mode="reflect",
-        power=2.0,
-        norm='slaney',
-        onesided=True,
-        mel_scale="htk"
+        power=None,
+        norm=mel_params["norm"],
+        mel_scale=mel_params["mel_scale"]
     )
 
     spectrogram = torchaudio.transforms.Spectrogram(
@@ -119,7 +119,8 @@ if __name__ == "__main__":
         win_length=spectro_params["win_length"],
         center=True,
         pad_mode="reflect",
-        power=2.0
+        power=None,
+        return_complex=spectro_params["return_complex"]
     )
 
     isd = InstrumentSoundDataset(
@@ -131,12 +132,10 @@ if __name__ == "__main__":
         device
     )
 
-    spectrogram_to_signal = torchaudio.transforms.GriffinLim(
+    spectrogram_to_signal = torchaudio.transforms.InverseSpectrogram(
         n_fft=spectro_params["n_fft"],
-        n_iter=spectro_params["n_iter"],
         hop_length=spectro_params["hop_length"],
         win_length=spectro_params["win_length"],
-        power=2.0,
         # Using partial to modify the method default parameters so as to use the right device
         window_fn=partial(torch.hann_window, device=isd.device)
     )
@@ -144,7 +143,8 @@ if __name__ == "__main__":
     print(f"There are {len(isd)} samples in the dataset !")
     signal, label = isd[0]
 
-    post = spectrogram_to_signal(signal)
-    torchaudio.save("test_spectro_44100.wav", post.to("cpu"), SAMPLE_RATE)
+    print(signal.size())
+    # post = spectrogram_to_signal(signal)
+    # torchaudio.save("istft.wav", post.to("cpu"), SAMPLE_RATE)
 
 
